@@ -9,12 +9,18 @@ let restController = {
         ...r.dataValues,
         description: r.dataValues.description.substring(0, 50)
       }))
-      console.log(data[0].Category)
       return res.render('restaurants', {
         restaurants: data
       })
     })
-  }
+  },
+
+  getRestaurant: (req, res) => {
+    return Restaurant.findByPk(req.params.id, { include: Category })
+      .then(restaurant => {
+        return res.render('restaurant', { restaurant: JSON.parse(JSON.stringify(restaurant)) })
+      })
+  },
 }
 
 module.exports = restController

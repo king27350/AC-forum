@@ -21,9 +21,12 @@ module.exports = (app, passport) => {
     res.redirect('/signin')
   }
 
+  //前台路由
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
   app.get('/restaurants', authenticated, restController.getRestaurants)
+  app.get('/restaurants/:id', authenticated, restController.getRestaurant)
 
+  //後台路由
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
 
@@ -51,4 +54,5 @@ module.exports = (app, passport) => {
   app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
   app.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategories)
   app.delete('/admin/categories/:id', authenticatedAdmin, categoryController.deleteCategory)
+
 }
