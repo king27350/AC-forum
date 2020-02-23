@@ -22,7 +22,6 @@ module.exports = (app, passport) => {
     res.redirect('/signin')
   }
 
-  //前台路由
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
   app.get('/restaurants', authenticated, restController.getRestaurants)
   app.get('/restaurants/feeds', authenticated, restController.getFeeds)
@@ -35,7 +34,6 @@ module.exports = (app, passport) => {
   app.post('/like/:restaurantId', authenticated, userController.likeRestaurant)
   app.delete('/like/:restaurantId', authenticated, userController.unlikeRestaurant)
 
-  //後台路由
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
 
@@ -69,7 +67,7 @@ module.exports = (app, passport) => {
   app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
 
   // user ///
-
+  app.get('/users/top', authenticated, userController.getTopUser)
   app.get('/users/:id', authenticated, userController.getUser)
   app.get('/users/:id/edit', authenticated, userController.editUser)
   app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
