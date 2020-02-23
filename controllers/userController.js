@@ -3,6 +3,7 @@ const db = require('../models')
 const User = db.User
 const Comment = db.Comment
 const Restaurant = db.Restaurant
+const Favorite = db.Favorite
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = '8b0d7656d65a4d3'
 
@@ -75,8 +76,6 @@ let userController = {
   },
 
   editUser: (req, res) => {
-
-
     const userId = Number(req.params.id)
     if (userId !== req.user.id) {
       req.flash('error_messages', 'without permission！')
@@ -86,7 +85,6 @@ let userController = {
   },
 
   putUser: (req, res) => {
-    //尚未增加 認證
     const userId = Number(req.params.id)
     if (userId !== req.user.id) {
       req.flash('error_messages', 'without permission！')
@@ -126,7 +124,34 @@ let userController = {
               res.redirect(`/users/${res.locals.user.id}`)
             })
         })
+  },
+
+  addFavorite: (req, res) => {
+    return Favorite.create({
+      UserId: req.user.id,
+      RestaurantId: req.params.restaurantId
+    }).then((restaurant) => {
+      req.flash('success_messages', "Add Favorite")
+      return res.redirect('back')
+    })
+  },
+
+  removeFavorite: (req, res) => {
+    return Favorite.findOne({
+      where: {
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      }
+    })
+      .then((favorite) => {
+        favorite.destroy()
+          .then((restaurant) => {
+            req.flash('success_messages', "Deleted Favorite")
+            return res.redirect('back')
+          })
+      })
   }
+
 
 }
 
