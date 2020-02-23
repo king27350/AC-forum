@@ -1,0 +1,32 @@
+<div class="d-flex" id="user-info">
+  <div class="user_img">
+    <img src="{{users.image}}" alt="userImage" width="300px">
+  </div>
+
+  <div class="user_content ml-3">
+    <h5>{{users.name}}</h5>
+    <p>{{users.email}}</p>
+    <div class="my-3"><span class="mr-1">{{comments.length}}</span>已評論餐廳</div>
+    <a href="/users/{{users.id}}/edit">
+      <button type="button" class="btn btn-primary">Edit</button>
+    </a>
+  </div>
+</div>
+
+<br>
+
+<div class="card">
+  <div class="card-header">
+    <div><span class="mr-1">{{comments.length}}</span>已評論餐廳</div>
+  </div>
+  <div class="card-body">
+    {{#each comments}}
+    <div class="mr-2 card-restaurant-img" style="display: inline-block;">
+      <a href="/restaurants/{{this.Restaurant.id}}">
+        <img src="{{this.Restaurant.image}}" alt="image" width="100px">
+      </a>
+    </div>
+
+    {{/each}}
+  </div>
+</div>

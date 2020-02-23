@@ -1,6 +1,10 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
 const User = db.User
+const Comment = db.Comment
+const Restaurant = db.Restaurant
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = '8b0d7656d65a4d3'
 
 let userController = {
   signUpPage: (req, res) => {
@@ -46,6 +50,82 @@ let userController = {
     req.flash('success_messages', '登出成功！')
     req.logout()
     res.redirect('/signin')
+  },
+
+  //// User profile 
+
+  // 若是在取得使用者資料以前加一層 if(req.params.id !== res.locals.user.id ) 的判別直接不給認證 強制單一帳號只能瀏覽自身的profile 就可以直接從 res.locals.user 直接取得 使用者資料   !!!(若是直接封裝到 authenticated 簡化寫法?)
+
+  ////
+  getUser: (req, res) => {
+    const userId = Number(req.params.id)
+    if (userId !== req.user.id) {
+      req.flash('error_messages', 'without permission！')
+      return res.redirect(`/users/${res.locals.user.id}`)
+    }
+
+    User.findByPk(userId, {
+      include: [
+        { model: Comment, include: [Restaurant] }
+      ]
+    }).then(results => {
+      return res.render('userProfile/users', { users: results.dataValues, comments: JSON.parse(JSON.stringify(results.dataValues.Comments)) })
+
+    })
+  },
+
+  editUser: (req, res) => {
+
+
+    const userId = Number(req.params.id)
+    if (userId !== req.user.id) {
+      req.flash('error_messages', 'without permission！')
+      return res.redirect(`/users/${res.locals.user.id}`)
+    }
+    return res.render('userProfile/edit', { users: res.locals.user })
+  },
+
+  putUser: (req, res) => {
+    //尚未增加 認證
+    const userId = Number(req.params.id)
+    if (userId !== req.user.id) {
+      req.flash('error_messages', 'without permission！')
+      return res.redirect(`/users/${req.params.id}`)
+    }
+    if (!req.body.name) {
+      req.flash('error_messages', "name didn't exist")
+      return res.redirect('back')
+    }
+
+    const { file } = req // const file = req.file
+    if (file) {
+      imgur.setClientID(IMGUR_CLIENT_ID);
+      imgur.upload(file.path, (err, img) => {
+        return User.findByPk(req.params.id)
+          .then((user) => {
+            user.update({
+              name: req.body.name,
+              image: file ? img.data.link : user.image,
+            })
+              .then((user) => {
+                req.flash('success_messages', 'user was successfully to update')
+                res.redirect(`/users/${res.locals.user.id}`)
+              })
+          })
+      })
+    }
+    else
+      return User.findByPk(req.params.id)
+        .then((user) => {
+          user.update({
+            name: req.body.name,
+            image: user.image
+          })
+            .then((user) => {
+              req.flash('success_messages', 'user was successfully to update')
+              res.redirect(`/users/${res.locals.user.id}`)
+            })
+        })
   }
 
 }
