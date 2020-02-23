@@ -29,7 +29,8 @@ let restController = {
       const data = result.rows.map(r => ({
         ...r.dataValues,
         description: r.dataValues.description.substring(0, 50),
-        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id)
+        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+        isLiked: req.user.LikedRestaurants.map(d => d.id).includes(r.id)
       }))
       Category.findAll().then(categories => {
         return res.render('restaurants', {
@@ -50,14 +51,16 @@ let restController = {
       include: [
         Category,
         { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' },
         { model: Comment, include: [User] }
       ]
     })
       .then(restaurant => {
         const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
+        const isLiked = restaurant.LikedUsers.map(d => d.id).includes(req.user.id)
         // 直覺得依點擊次數更改資料庫資料；但是理想中是想做出偵測ip位置的真實性到訪記錄(未實現)
         restaurant.increment('viewCounts')
-        return res.render('restaurant', { restaurant: JSON.parse(JSON.stringify(restaurant)), isFavorited: isFavorited })
+        return res.render('restaurant', { restaurant: JSON.parse(JSON.stringify(restaurant)), isFavorited: isFavorited, isLiked: isLiked })
       })
   },
 
