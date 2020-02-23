@@ -52,6 +52,8 @@ let restController = {
       ]
     })
       .then(restaurant => {
+        // 之前做過的經驗中；查詢到直覺得依點擊次數更改資料庫資料；但是理想中是想做出偵測ip位置的之實性到訪記錄(未實現)
+        restaurant.increment('viewCounts')
         return res.render('restaurant', { restaurant: JSON.parse(JSON.stringify(restaurant)) })
       })
   },
@@ -82,9 +84,6 @@ let restController = {
         { model: Comment, include: [User] }
       ]
     }).then(restaurant => {
-      // 之前做過的經驗中；查詢到直覺得依點擊次數更改資料庫資料；但是理想中是想做出偵測ip位置的之實性到訪記錄(未實現)
-      restaurant.viewCounts += 1
-      restaurant.save()
       return res.render('dashboard', { restaurant: JSON.parse(JSON.stringify(restaurant)) })
     })
   }
