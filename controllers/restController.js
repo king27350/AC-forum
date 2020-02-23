@@ -28,7 +28,8 @@ let restController = {
       // clean up restaurant data
       const data = result.rows.map(r => ({
         ...r.dataValues,
-        description: r.dataValues.description.substring(0, 50)
+        description: r.dataValues.description.substring(0, 50),
+        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id)
       }))
       Category.findAll().then(categories => {
         return res.render('restaurants', {
@@ -48,13 +49,15 @@ let restController = {
     return Restaurant.findByPk(req.params.id, {
       include: [
         Category,
+        { model: User, as: 'FavoritedUsers' },
         { model: Comment, include: [User] }
       ]
     })
       .then(restaurant => {
-        // 之前做過的經驗中；查詢到直覺得依點擊次數更改資料庫資料；但是理想中是想做出偵測ip位置的之實性到訪記錄(未實現)
+        const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
+        // 直覺得依點擊次數更改資料庫資料；但是理想中是想做出偵測ip位置的真實性到訪記錄(未實現)
         restaurant.increment('viewCounts')
-        return res.render('restaurant', { restaurant: JSON.parse(JSON.stringify(restaurant)) })
+        return res.render('restaurant', { restaurant: JSON.parse(JSON.stringify(restaurant)), isFavorited: isFavorited })
       })
   },
 
