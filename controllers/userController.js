@@ -62,17 +62,39 @@ let userController = {
   ////
   getUser: (req, res) => {
     const userId = Number(req.params.id)
-    if (userId !== req.user.id) {
-      req.flash('error_messages', 'without permission！')
-      return res.redirect(`/users/${res.locals.user.id}`)
-    }
+    // if (userId !== req.user.id) {
+    //   req.flash('error_messages', 'without permission！')
+    //   return res.redirect(`/users/${res.locals.user.id}`)
+    // }
 
     User.findByPk(userId, {
       include: [
-        { model: Comment, include: [Restaurant] }
+        { model: Comment, include: [Restaurant] },
+        { model: Restaurant, as: 'FavoritedRestaurants' },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' }
       ]
     }).then(results => {
-      return res.render('userProfile/users', { users: results.dataValues, comments: JSON.parse(JSON.stringify(results.dataValues.Comments)) })
+
+      const comments = JSON.parse(JSON.stringify(results.dataValues.Comments))
+      const set = new Set()
+      const commentsFilter = comments.filter(comment => !set.has(comment.RestaurantId) ? set.add(comment.RestaurantId) : false)
+
+      console.log('-------------', commentsFilter)
+      const favoriteRestaurants = JSON.parse(JSON.stringify(results.dataValues.FavoritedRestaurants))
+      const following = JSON.parse(JSON.stringify(results.dataValues.Followings))
+      const follower = JSON.parse(JSON.stringify(results.dataValues.Followers))
+      const isFollowed = JSON.parse(JSON.stringify(results.dataValues.Followings)).map(following => following.id).includes(res.locals.user.id)
+
+      return res.render('userProfile/users', {
+        users: results.dataValues,
+        comments,
+        favoriteRestaurants,
+        following,
+        follower,
+        isFollowed,
+        commentsFilter
+      })
 
     })
   },
