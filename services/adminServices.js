@@ -9,6 +9,12 @@ const adminService = {
     return Restaurant.findAll({ include: [Category] }).then(restaurants => {
       callback({ restaurants: JSON.parse(JSON.stringify(restaurants)), user: req.user, isAuthenticated: req.isAuthenticated })
     })
+  },
+
+  getRestaurant: (req, res, callback) => {
+    return Restaurant.findByPk(req.params.id, { include: [Category] }).then(restaurant => {
+      callback({ restaurant: JSON.parse(JSON.stringify(restaurant)) })
+    })
   }
 }
 
