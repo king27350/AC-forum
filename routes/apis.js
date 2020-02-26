@@ -30,6 +30,8 @@ router.post('/admin/categories', authenticated, authenticatedAdmin, categoryCont
 router.put('/admin/categories/:id', authenticated, authenticatedAdmin, categoryController.putCategories)
 router.delete('/admin/categories/:id', authenticated, authenticatedAdmin, categoryController.deleteCategory)
 
+router.post('/singup', userController.signUp)
+
 // JWT signin
 router.post('/signin', userController.signIn)
 
