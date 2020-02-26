@@ -16,6 +16,12 @@ let categoryController = {
     })
   },
 
+  putCategories: (req, res) => {
+    categoryService.putCategories(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
 }
 
 module.exports = categoryController
