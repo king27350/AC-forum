@@ -1,16 +1,14 @@
-
-const commentService = require('../services/commentServices')
+const commentService = require('../../services/commentServices')
 
 let commentController = {
   postComment: (req, res) => {
     commentService.postComment(req, res, (data) => {
-      return res.redirect(`/restaurants/${data['RestaurantId']}`)
+      return res.json(data)
     })
   },
-
   deleteComment: (req, res) => {
     commentService.deleteComment(req, res, (data) => {
-      return res.redirect(`/restaurants/${data['RestaurantId']}`)
+      return res.json(data)
     })
   }
 }
