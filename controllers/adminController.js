@@ -1,10 +1,3 @@
-const db = require('../models')
-const Restaurant = db.Restaurant
-const User = db.User
-const Category = db.Category
-//const fs = require('fs')
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = '8b0d7656d65a4d3'
 
 const adminService = require('../services/adminServices')
 
@@ -68,25 +61,15 @@ const adminController = {
 
   ///////// Users 使用者權限管理 //////// 
   getUsers: (req, res) => {
-    return User.findAll().then(users => {
-      return res.render('admin/users', { users: JSON.parse(JSON.stringify(users)) })
+    adminService.getUsers(req, res, (data) => {
+      return res.render('admin/users', data)
     })
   },
 
   putUsers: (req, res) => {
-    return User.findByPk(req.params.id).then(user => {
-      if (req.user.id === user.id) {
-        req.flash('error_messages', "without permission change")
-        res.redirect('/admin/users')
-      } else {
-        user.update({
-          isAdmin: !user.isAdmin
-        }).then(user => {
-          req.flash('success_messages', "user state updated")
-          res.redirect('/admin/users')
-        })
-      }
-
+    adminService.putUsers(req, res, (data) => {
+      req.flash('success_messages', data['message'])
+      return res.redirect('/admin/users')
     })
   }
 

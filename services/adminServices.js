@@ -1,6 +1,7 @@
 const db = require('../models')
 const Restaurant = db.Restaurant
 const Category = db.Category
+const User = db.User
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = '8b0d7656d65a4d3'
 
@@ -107,7 +108,29 @@ const adminService = {
             callback({ status: 'success', message: '' })
           })
       })
+  },
+
+  getUsers: (req, res, callback) => {
+    return User.findAll().then(users => {
+      callback({ users: JSON.parse(JSON.stringify(users)) })
+    })
+  },
+
+  putUsers: (req, res, callback) => {
+    return User.findByPk(req.params.id).then(user => {
+      if (req.user.id === user.id) {
+        req.flash('error_messages', "without permission change")
+        res.redirect('/admin/users')
+      } else {
+        user.update({
+          isAdmin: !user.isAdmin
+        }).then(user => {
+          callback({ status: 'success', message: 'user was successfully to update' })
+        })
+      }
+    })
   }
+
 }
 
 module.exports = adminService
