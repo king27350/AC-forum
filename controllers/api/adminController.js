@@ -11,8 +11,20 @@ const adminController = {
     })
   },
 
+  createRestaurant: (req, res, callback) => {
+    adminService.createRestaurant(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
   getRestaurant: (req, res) => {
     adminService.getRestaurant(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
+  editRestaurant: (req, res) => {
+    adminService.editRestaurant(req, res, (data) => {
       return res.json(data)
     })
   },

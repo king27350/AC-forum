@@ -9,8 +9,8 @@ const adminController = {
   },
 
   createRestaurant: (req, res) => {
-    Category.findAll().then(categories => {
-      return res.render('admin/create', { categories: JSON.parse(JSON.stringify(categories)) })
+    adminService.createRestaurant(req, res, (data) => {
+      return res.render('admin/create', data)
     })
   },
 
@@ -32,11 +32,8 @@ const adminController = {
   },
 
   editRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id).then(restaurant => {
-      Category.findAll().then(categories => {
-        return res.render('admin/create', { restaurant: JSON.parse(JSON.stringify(restaurant)), categories: JSON.parse(JSON.stringify(categories)) })
-      })
-
+    adminService.editRestaurant(req, res, (data) => {
+      return res.render('admin/create', data)
     })
   },
 
